@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +16,15 @@
         android:theme="@style/Theme.StoryAppIntermediate"
         tools:targetApi="31">
         <activity
+            android:name=".CameraActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
@@ -23,7 +34,6 @@
             android:name=".MainActivity"
             android:exported="true">
 
-            <!-- Menambahkan intent-filter untuk membuat MainActivity sebagai default activity -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

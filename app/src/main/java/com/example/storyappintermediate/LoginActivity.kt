@@ -14,8 +14,9 @@ import com.example.storyappintermediate.utils.PreferencesHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -28,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
 
 
         preferencesHelper = PreferencesHelper(this)
+
+        applyFadeInAnimations(this, binding)
 
         binding.btnLogin.setOnClickListener {
             val email = binding.edLoginEmail.text.toString()

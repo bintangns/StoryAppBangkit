@@ -9,6 +9,7 @@ import com.example.storyappintermediate.api.RegisterResponse
 import com.example.storyappintermediate.api.StoryApi
 import com.example.storyappintermediate.databinding.ActivityRegisterBinding
 import com.example.storyappintermediate.model.User
+import com.example.storyappintermediate.utils.PreferencesHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var storyApi: StoryApi
+    private lateinit var preferencesHelper: PreferencesHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,9 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         storyApi = ApiConfig.getApiService()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
 
         binding.btnRegister.setOnClickListener {
             val name = binding.edRegisterName.text.toString()
@@ -59,5 +64,10 @@ class RegisterActivity : AppCompatActivity() {
                 }
             })
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }
