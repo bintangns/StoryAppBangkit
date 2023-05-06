@@ -53,7 +53,7 @@ class DetailActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<DetailStoryResponse>, response: Response<DetailStoryResponse>) {
                     if (response.isSuccessful) {
                         val story = response.body()?.story
-                        updateUI(story)
+                        update(story)
                     } else {
                         Toast.makeText(this@DetailActivity, "Failed to load story detail", Toast.LENGTH_SHORT).show()
                     }
@@ -65,7 +65,7 @@ class DetailActivity : AppCompatActivity() {
             })
         }
     }
-    private fun updateUI(story: Story?) {
+    private fun update(story: Story?) {
         story?.let {
             binding.tvDetailName.text = it.name
             binding.tvDetailDescription.text = it.description

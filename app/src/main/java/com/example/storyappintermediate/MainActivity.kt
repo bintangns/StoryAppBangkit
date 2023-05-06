@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storyappintermediate.adapter.StoryAdapter
 import com.example.storyappintermediate.api.ApiConfig
@@ -29,10 +32,12 @@ class MainActivity : AppCompatActivity() {
         preferencesHelper = PreferencesHelper(this)
 
 
+
         if (!preferencesHelper.isLoggedIn) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }else{
+            showLoading(true)
             getAllStories()
         }
 
@@ -57,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun getAllStories() {
         val token = "Bearer ${preferencesHelper.token}"
         ApiConfig.getApiService().getAllStories(token).enqueue(object :
@@ -65,23 +71,41 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val stories = response.body()?.listStory ?: listOf()
                     showStories(stories)
+                    showLoading(false)
                 } else {
-                    // Handle error
+                    showLoading(true)
                 }
             }
 
             override fun onFailure(call: Call<GetStoriesResponse>, t: Throwable) {
-                // Handle error
+                showLoading(true)
             }
         })
     }
     private fun showStories(stories: List<Story>) {
-        val storyAdapter = StoryAdapter(stories) { story ->
-            // Handle onItemClick here
-            // For example, start a new activity to show the details of the selected story
+        val storyAdapter = StoryAdapter(stories) { story, sharedView ->
+            val intent = Intent(this, DetailActivity::class.java)
+            intent.putExtra(DetailActivity.EXTRA_STORY_ID, story.id)
+
+            val transitionName = ViewCompat.getTransitionName(sharedView)
+            if (transitionName != null) {
+                val sharedElement = androidx.core.util.Pair.create(sharedView, transitionName)
+
+                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedElement)
+                startActivity(intent, options.toBundle())
+            } else {
+                startActivity(intent)
+            }
         }
         binding.rvStories.layoutManager = LinearLayoutManager(this)
         binding.rvStories.adapter = storyAdapter
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            binding.progressBar.visibility = View.VISIBLE
+        } else {
+            binding.progressBar.visibility = View.GONE
+        }
+    }
 }

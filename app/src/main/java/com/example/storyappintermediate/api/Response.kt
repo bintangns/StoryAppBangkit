@@ -20,6 +20,12 @@ data class LoginCredentials(
     val password: String
 )
 
+data class RegisterCredentials(
+    val name: String,
+    val email: String,
+    val password: String
+)
+
 data class GetStoriesResponse(
     val error: Boolean,
     val message: String,

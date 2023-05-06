@@ -3,13 +3,20 @@ package com.example.storyappintermediate
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Toast
+import applyFadeInAnimations
 import com.example.storyappintermediate.api.ApiConfig
+import com.example.storyappintermediate.api.RegisterCredentials
 import com.example.storyappintermediate.api.RegisterResponse
 import com.example.storyappintermediate.api.StoryApi
 import com.example.storyappintermediate.databinding.ActivityRegisterBinding
 import com.example.storyappintermediate.model.User
 import com.example.storyappintermediate.utils.PreferencesHelper
+import com.example.storyappintermediate.utils.createTextWatcher
+import com.example.storyappintermediate.utils.isValidEmail
+import com.example.storyappintermediate.utils.isValidPassword
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -19,8 +26,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var storyApi: StoryApi
-    private lateinit var preferencesHelper: PreferencesHelper
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -28,21 +33,45 @@ class RegisterActivity : AppCompatActivity() {
 
         storyApi = ApiConfig.getApiService()
 
+        val button = listOf(
+            binding.edRegisterName,
+            binding.edRegisterEmail,
+            binding.edRegisterPassword,
+            binding.btnRegister
+        )
+        applyFadeInAnimations(this, button)
+
+        binding.btnRegister.isEnabled = false
+
+        binding.edRegisterPassword.addTextChangedListener(createTextWatcher { s, _, _, _ ->
+            binding.btnRegister.isEnabled = isValidPassword(s.toString())
+        })
+
+
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+
 
         binding.btnRegister.setOnClickListener {
             val name = binding.edRegisterName.text.toString()
             val email = binding.edRegisterEmail.text.toString()
             val password = binding.edRegisterPassword.text.toString()
 
-            val user = User(name, email, password)
+            val user = RegisterCredentials(name, email, password)
             val call = storyApi.register(user)
 
-            if (password.length < 8) {
+            if (!isValidEmail(email)) {
+                binding.edRegisterEmail.error = "Please enter a valid email address"
+                return@setOnClickListener
+            }
+
+            if (!isValidPassword(password)) {
                 binding.edRegisterPassword.error = "Password must be at least 8 characters"
                 return@setOnClickListener
             }
+
+
 
             call.enqueue(object : Callback<RegisterResponse> {
                 override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {

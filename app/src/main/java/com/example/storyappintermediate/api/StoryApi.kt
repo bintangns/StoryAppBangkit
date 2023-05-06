@@ -7,7 +7,7 @@ import retrofit2.http.*
 
 interface StoryApi {
     @POST("v1/register")
-    fun register(@Body user: User): Call<RegisterResponse>
+    fun register(@Body user: RegisterCredentials): Call<RegisterResponse>
 
     @POST("v1/login")
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>

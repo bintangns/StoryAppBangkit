@@ -95,7 +95,6 @@ class PostActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
         binding.cameraXButton.setOnClickListener { startCameraX() }
-//        binding.cameraButton.setOnClickListener { startTakePhoto() }
         binding.galleryButton.setOnClickListener { startGallery() }
         binding.uploadButton.setOnClickListener { uploadImage() }
 
@@ -159,9 +158,6 @@ class PostActivity : AppCompatActivity() {
         launcherIntentGallery.launch(chooser)
     }
 
-    private fun startTakePhoto() {
-        Toast.makeText(this, "Fitur ini belum tersedia", Toast.LENGTH_SHORT).show()
-    }
 
     private fun uploadImage() {
         val file = reduceFileImage(getFile as File)
@@ -186,6 +182,7 @@ class PostActivity : AppCompatActivity() {
                         if (responseBody != null && !responseBody.error) {
                             Toast.makeText(this@PostActivity, responseBody.message, Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@PostActivity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                             startActivity(intent)
                             finish()
                         }

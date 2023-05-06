@@ -1,44 +1,21 @@
-package com.example.storyappintermediate
-
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.view.View
-import android.view.animation.AnimationUtils
-import com.example.storyappintermediate.databinding.ActivityLoginBinding
 
-fun applyFadeInAnimations(context: Context, binding: ActivityLoginBinding) {
-    val fadeInAnimation = AnimationUtils.loadAnimation(context, R.anim.fade_in)
+fun applyFadeInAnimations(context: Context, views: List<View>) {
+    val animationDuration = 500L
+    val delayBetweenFields = 250L
 
-    val emailField = binding.edLoginEmail
-    val passwordField = binding.edLoginPassword
-    val loginButton = binding.btnLogin
-    val registerButton = binding.btnOpenRegister
+    views.forEachIndexed { index, view ->
+        val fadeInAnimator = ObjectAnimator.ofFloat(view, "alpha", 0f, 1f)
+        fadeInAnimator.duration = animationDuration
+        fadeInAnimator.startDelay = delayBetweenFields * index
 
-    emailField.visibility = View.INVISIBLE
-    passwordField.visibility = View.INVISIBLE
-    loginButton.visibility = View.INVISIBLE
-    registerButton.visibility = View.INVISIBLE
-
-    val animationDuration = 700L
-    fadeInAnimation.duration = animationDuration
-
-    val delayBetweenFields = 300L
-    emailField.postDelayed({
-        emailField.visibility = View.VISIBLE
-        emailField.startAnimation(fadeInAnimation)
-    }, delayBetweenFields * 1)
-
-    passwordField.postDelayed({
-        passwordField.visibility = View.VISIBLE
-        passwordField.startAnimation(fadeInAnimation)
-    }, delayBetweenFields * 2)
-
-    loginButton.postDelayed({
-        loginButton.visibility = View.VISIBLE
-        loginButton.startAnimation(fadeInAnimation)
-    }, delayBetweenFields * 3)
-
-    registerButton.postDelayed({
-        registerButton.visibility = View.VISIBLE
-        registerButton.startAnimation(fadeInAnimation)
-    }, delayBetweenFields * 4)
+        view.visibility = View.INVISIBLE
+        view.postDelayed({
+            view.visibility = View.VISIBLE
+            fadeInAnimator.start()
+        }, delayBetweenFields * index)
+    }
 }
