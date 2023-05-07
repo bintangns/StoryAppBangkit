@@ -37,17 +37,12 @@ class LoginActivity : AppCompatActivity() {
 
         binding.btnLogin.isEnabled = false
 
-        binding.edLoginEmail.addTextChangedListener(createTextWatcher { s, _, _, _ ->
-            val email = binding.edLoginEmail.text.toString()
-            val password = binding.edLoginPassword.text.toString()
-            binding.btnLogin.isEnabled = isValidEmail(email) && isValidPassword(password)
-        })
+        val textWatcher = createTextWatcher { _, _, _, _ ->
+            updateLoginButtonState()
+        }
 
-        binding.edLoginPassword.addTextChangedListener(createTextWatcher { s, _, _, _ ->
-            val email = binding.edLoginEmail.text.toString()
-            val password = binding.edLoginPassword.text.toString()
-            binding.btnLogin.isEnabled = isValidEmail(email) && isValidPassword(password)
-        })
+        binding.edLoginEmail.addTextChangedListener(textWatcher)
+        binding.edLoginPassword.addTextChangedListener(textWatcher)
 
 
 
@@ -114,6 +109,30 @@ class LoginActivity : AppCompatActivity() {
         binding.btnOpenRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun updateLoginButtonState() {
+        val email = binding.edLoginEmail.text.toString()
+        val password = binding.edLoginPassword.text.toString()
+        binding.btnLogin.isEnabled = isValidEmail(email) && isValidPassword(password)
+        updateButtonText(email, password)
+    }
+
+    private fun updateButtonText(email: String, password: String) {
+        when {
+            email.isEmpty() || password.isEmpty() -> {
+                binding.btnLogin.text = "Mohon Isi Form"
+            }
+            !isValidEmail(email) -> {
+                binding.btnLogin.text = "Email tidak valid"
+            }
+            !isValidPassword(password) -> {
+                binding.btnLogin.text = "Password Tidak Valid"
+            }
+            else -> {
+                binding.btnLogin.text = "Login"
+            }
         }
     }
 

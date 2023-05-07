@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import applyFadeInAnimations
 import com.example.storyappintermediate.api.ApiConfig
@@ -43,9 +45,12 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnRegister.isEnabled = false
 
-        binding.edRegisterPassword.addTextChangedListener(createTextWatcher { s, _, _, _ ->
-            binding.btnRegister.isEnabled = isValidPassword(s.toString())
-        })
+        val textWatcher = createTextWatcher { _, _, _, _ ->
+            updateRegisterState()
+        }
+
+        binding.edRegisterEmail.addTextChangedListener(textWatcher)
+        binding.edRegisterPassword.addTextChangedListener(textWatcher)
 
 
 
@@ -70,11 +75,13 @@ class RegisterActivity : AppCompatActivity() {
                 binding.edRegisterPassword.error = "Password must be at least 8 characters"
                 return@setOnClickListener
             }
+            showLoading(true)
 
 
 
             call.enqueue(object : Callback<RegisterResponse> {
                 override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+                    showLoading(false)
                     if (response.isSuccessful) {
                         val registerResponse = response.body()
                         if (registerResponse?.error == false) {
@@ -95,8 +102,42 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateRegisterState() {
+        val name = binding.edRegisterName.text.toString()
+        val email = binding.edRegisterEmail.text.toString()
+        val password = binding.edRegisterPassword.text.toString()
+        binding.btnRegister.isEnabled = isValidEmail(email) && isValidPassword(password)
+        updateButtonText(email, password, name)
+    }
+
+    private fun updateButtonText(email: String, password: String, name: String) {
+        when {
+            name.isEmpty()||email.isEmpty() || password.isEmpty() -> {
+                binding.btnRegister.text = "Mohon Isi Form"
+            }
+            !isValidEmail(email) -> {
+                binding.btnRegister.text = "Email tidak valid"
+            }
+            !isValidPassword(password) -> {
+                binding.btnRegister.text = "Password Minimal 8 Karakter"
+            }
+            else -> {
+                binding.btnRegister.text = "Register"
+            }
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        val loadingOverlay = findViewById<FrameLayout>(R.id.loading_overlay)
+        if (isLoading) {
+            loadingOverlay.visibility = View.VISIBLE
+        } else {
+            loadingOverlay.visibility = View.GONE
+        }
     }
 }
