@@ -20,9 +20,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout
 import applyFadeInAnimations
-import com.example.storyappintermediate.utils.createTextWatcher
-import com.example.storyappintermediate.utils.isValidEmail
-import com.example.storyappintermediate.utils.isValidPassword
 import retrofit2.Retrofit
 
 class LoginActivity : AppCompatActivity() {
@@ -33,17 +30,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
-        binding.btnLogin.isEnabled = false
-
-        val textWatcher = createTextWatcher { _, _, _, _ ->
-            updateLoginButtonState()
-        }
-
-        binding.edLoginEmail.addTextChangedListener(textWatcher)
-        binding.edLoginPassword.addTextChangedListener(textWatcher)
-
 
 
         preferencesHelper = PreferencesHelper(this)
@@ -62,16 +48,6 @@ class LoginActivity : AppCompatActivity() {
 
             val loginCredentials = LoginCredentials(email, password)
             val call = ApiConfig.getApiService().login(loginCredentials)
-
-            if (!isValidEmail(email)) {
-                binding.edLoginEmail.error = "Please enter a valid email address"
-                return@setOnClickListener
-            }
-
-            if (!isValidPassword(password)) {
-                binding.edLoginPassword.error = "Password must be at least 8 characters"
-                return@setOnClickListener
-            }
 
             showLoading(true)
 
@@ -109,30 +85,6 @@ class LoginActivity : AppCompatActivity() {
         binding.btnOpenRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
-        }
-    }
-
-    private fun updateLoginButtonState() {
-        val email = binding.edLoginEmail.text.toString()
-        val password = binding.edLoginPassword.text.toString()
-        binding.btnLogin.isEnabled = isValidEmail(email) && isValidPassword(password)
-        updateButtonText(email, password)
-    }
-
-    private fun updateButtonText(email: String, password: String) {
-        when {
-            email.isEmpty() || password.isEmpty() -> {
-                binding.btnLogin.text = "Mohon Isi Form"
-            }
-            !isValidEmail(email) -> {
-                binding.btnLogin.text = "Email tidak valid"
-            }
-            !isValidPassword(password) -> {
-                binding.btnLogin.text = "Password Tidak Valid"
-            }
-            else -> {
-                binding.btnLogin.text = "Login"
-            }
         }
     }
 

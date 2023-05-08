@@ -14,20 +14,17 @@ import com.example.storyappintermediate.api.RegisterCredentials
 import com.example.storyappintermediate.api.RegisterResponse
 import com.example.storyappintermediate.api.StoryApi
 import com.example.storyappintermediate.databinding.ActivityRegisterBinding
-import com.example.storyappintermediate.model.User
-import com.example.storyappintermediate.utils.PreferencesHelper
-import com.example.storyappintermediate.utils.createTextWatcher
-import com.example.storyappintermediate.utils.isValidEmail
-import com.example.storyappintermediate.utils.isValidPassword
+import com.example.storyappintermediate.utils.MyButton
+import com.example.storyappintermediate.utils.MyEditText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var storyApi: StoryApi
+    private lateinit var myButton: MyButton
+    private lateinit var myEditText: MyEditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
@@ -45,12 +42,22 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.btnRegister.isEnabled = false
 
-        val textWatcher = createTextWatcher { _, _, _, _ ->
-            updateRegisterState()
-        }
+        myButton = findViewById(R.id.btn_register)
+        myEditText = findViewById(R.id.ed_register_password)
 
-        binding.edRegisterEmail.addTextChangedListener(textWatcher)
-        binding.edRegisterPassword.addTextChangedListener(textWatcher)
+        setMyButtonEnable()
+
+        myEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                setMyButtonEnable()
+            }
+            override fun afterTextChanged(s: Editable) {
+            }
+        })
+
+        myButton.setOnClickListener { Toast.makeText(this@RegisterActivity, myEditText.text, Toast.LENGTH_SHORT).show() }
 
 
 
@@ -66,15 +73,6 @@ class RegisterActivity : AppCompatActivity() {
             val user = RegisterCredentials(name, email, password)
             val call = storyApi.register(user)
 
-            if (!isValidEmail(email)) {
-                binding.edRegisterEmail.error = "Please enter a valid email address"
-                return@setOnClickListener
-            }
-
-            if (!isValidPassword(password)) {
-                binding.edRegisterPassword.error = "Password must be at least 8 characters"
-                return@setOnClickListener
-            }
             showLoading(true)
 
 
@@ -102,29 +100,9 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateRegisterState() {
-        val name = binding.edRegisterName.text.toString()
-        val email = binding.edRegisterEmail.text.toString()
-        val password = binding.edRegisterPassword.text.toString()
-        binding.btnRegister.isEnabled = isValidEmail(email) && isValidPassword(password)
-        updateButtonText(email, password, name)
-    }
-
-    private fun updateButtonText(email: String, password: String, name: String) {
-        when {
-            name.isEmpty()||email.isEmpty() || password.isEmpty() -> {
-                binding.btnRegister.text = "Mohon Isi Form"
-            }
-            !isValidEmail(email) -> {
-                binding.btnRegister.text = "Email tidak valid"
-            }
-            !isValidPassword(password) -> {
-                binding.btnRegister.text = "Password Minimal 8 Karakter"
-            }
-            else -> {
-                binding.btnRegister.text = "Register"
-            }
-        }
+    private fun setMyButtonEnable() {
+        val result = myEditText.text
+        myButton.isEnabled = result != null && result.toString().isNotEmpty() && result.length >= 8
     }
 
     override fun onSupportNavigateUp(): Boolean {
