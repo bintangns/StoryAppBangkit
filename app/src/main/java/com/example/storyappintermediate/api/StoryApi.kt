@@ -1,4 +1,5 @@
 package com.example.storyappintermediate.api
+import com.example.storyappintermediate.model.Story
 import com.example.storyappintermediate.model.User
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -25,4 +26,7 @@ interface StoryApi {
         @Part("description") description: RequestBody,
         @Header("Authorization") token: String
     ): Call<FileUploadResponse>
+
+    @GET("v1/stories?location=1")
+    fun getLocationStories(@Header("Authorization") token: String): Call<StoriesResponse>
 }

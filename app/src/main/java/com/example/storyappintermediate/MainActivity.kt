@@ -51,7 +51,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
+        return when (item.itemId)
+        {
+            R.id.action_map -> {
+                startActivity(Intent(this, MapsActivity::class.java))
+                true
+            }
             R.id.action_logout -> {
                 preferencesHelper.clear()
                 startActivity(Intent(this, LoginActivity::class.java))
@@ -60,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+
     }
 
 

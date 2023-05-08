@@ -4,4 +4,11 @@
         android:id="@+id/action_logout"
         android:title="Logout"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_map"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="Map"
+        app:showAsAction="ifRoom" />
+
 </menu>

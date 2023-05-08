@@ -44,3 +44,9 @@ data class FileUploadResponse(
     @field:SerializedName("message")
     val message: String
 )
+
+data class StoriesResponse(
+    @SerializedName("error") val error: Boolean,
+    @SerializedName("message") val message: String,
+    @SerializedName("listStory") val data: List<Story>?
+)
