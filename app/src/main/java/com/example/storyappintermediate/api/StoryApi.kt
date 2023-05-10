@@ -14,7 +14,10 @@ interface StoryApi {
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>
 
     @GET("v1/stories")
-    fun getAllStories(@Header("Authorization") token: String): Call<GetStoriesResponse>
+    suspend fun getAllStories(@Header("Authorization") token: String,
+                              @Query("page") page: Int,
+                              @Query("perPage") perPage: Int):
+            GetStoriesResponse
 
     @GET("v1/stories/{id}")
     fun getStoryDetail(@Path("id") storyId: String, @Header("Authorization") token: String): Call<DetailStoryResponse>

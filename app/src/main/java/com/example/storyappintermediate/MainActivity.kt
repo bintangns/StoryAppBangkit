@@ -1,5 +1,6 @@
 package com.example.storyappintermediate
 
+import StoryAdapter
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,13 +9,18 @@ import android.view.MenuItem
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.storyappintermediate.adapter.StoryAdapter
 import com.example.storyappintermediate.api.ApiConfig
 import com.example.storyappintermediate.api.GetStoriesResponse
+import com.example.storyappintermediate.database.StoryDatabase
 import com.example.storyappintermediate.databinding.ActivityMainBinding
 import com.example.storyappintermediate.model.Story
 import com.example.storyappintermediate.utils.PreferencesHelper
+import com.example.storyappintermediate.utils.StoryRepository
+import com.example.storyappintermediate.viewmodel.StoryViewModel
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -22,6 +28,9 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private lateinit var preferencesHelper: PreferencesHelper
     private lateinit var binding: ActivityMainBinding
+
+    private lateinit var viewModel: StoryViewModel
+    private lateinit var storyAdapter: StoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +45,19 @@ class MainActivity : AppCompatActivity() {
         if (!preferencesHelper.isLoggedIn) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
-        }else{
+        } else {
+            viewModel = ViewModelProvider(this, StoryViewModel.ViewModelFactory(this)).get(StoryViewModel::class.java)
+            storyAdapter = StoryAdapter { story ->
+                val intent = Intent(this, DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_STORY_ID, story.id)
+                startActivity(intent)
+            }
+            binding.rvStories.layoutManager = LinearLayoutManager(this)
+            binding.rvStories.adapter = storyAdapter
+
             showLoading(true)
-            getAllStories()
+            getData()
+
         }
 
         binding.fabPost.setOnClickListener {
@@ -68,43 +87,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    private fun getAllStories() {
-        val token = "Bearer ${preferencesHelper.token}"
-        ApiConfig.getApiService().getAllStories(token).enqueue(object :
-            Callback<GetStoriesResponse> {
-            override fun onResponse(call: Call<GetStoriesResponse>, response: Response<GetStoriesResponse>) {
-                if (response.isSuccessful) {
-                    val stories = response.body()?.listStory ?: listOf()
-                    showStories(stories)
-                    showLoading(false)
-                } else {
-                    showLoading(true)
-                }
-            }
-
-            override fun onFailure(call: Call<GetStoriesResponse>, t: Throwable) {
-                showLoading(true)
+    private fun getData() {
+        showLoading(false)
+        viewModel.story.observe(this, { pagingData ->
+            lifecycleScope.launch {
+                storyAdapter.submitData(pagingData)
             }
         })
-    }
-    private fun showStories(stories: List<Story>) {
-        val storyAdapter = StoryAdapter(stories) { story, sharedView ->
-            val intent = Intent(this, DetailActivity::class.java)
-            intent.putExtra(DetailActivity.EXTRA_STORY_ID, story.id)
-
-            val transitionName = ViewCompat.getTransitionName(sharedView)
-            if (transitionName != null) {
-                val sharedElement = androidx.core.util.Pair.create(sharedView, transitionName)
-
-                val options = ActivityOptionsCompat.makeSceneTransitionAnimation(this, sharedElement)
-                startActivity(intent, options.toBundle())
-            } else {
-                startActivity(intent)
-            }
-        }
-        binding.rvStories.layoutManager = LinearLayoutManager(this)
-        binding.rvStories.adapter = storyAdapter
     }
 
     private fun showLoading(isLoading: Boolean) {

@@ -1,23 +1,15 @@
-package com.example.storyappintermediate.adapter
-
-import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
-import androidx.core.view.ViewCompat
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.storyappintermediate.DetailActivity
-import com.example.storyappintermediate.R
 import com.example.storyappintermediate.databinding.ItemStoryBinding
 import com.example.storyappintermediate.model.Story
 
 class StoryAdapter(
-    private val stories: List<Story>,
-    private val onItemClick: (Story, View) -> Unit
-) : RecyclerView.Adapter<StoryAdapter.StoryViewHolder>() {
+    private val onItemClick: (Story) -> Unit
+) : PagingDataAdapter<Story, StoryAdapter.StoryViewHolder>(StoryComparator) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StoryViewHolder {
         val binding = ItemStoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -25,13 +17,14 @@ class StoryAdapter(
     }
 
     override fun onBindViewHolder(holder: StoryViewHolder, position: Int) {
-        val story = stories[position]
-        holder.bind(story)
-        holder.itemView.setOnClickListener {
-            onItemClick(story, holder.itemView.findViewById(R.id.iv_item_photo))
+        val storyItem = getItem(position)
+        if (storyItem != null) {
+            holder.bind(storyItem)
+            holder.itemView.setOnClickListener {
+                onItemClick(storyItem)
+            }
         }
     }
-    override fun getItemCount() = stories.size
 
     inner class StoryViewHolder(private val binding: ItemStoryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(story: Story) {
@@ -41,6 +34,17 @@ class StoryAdapter(
             Glide.with(itemView.context)
                 .load(story.photoUrl)
                 .into(binding.ivItemPhoto)
+        }
+    }
+
+    object StoryComparator : DiffUtil.ItemCallback<Story>() {
+        override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
+            // Id is unique.
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
+            return oldItem == newItem
         }
     }
 }
