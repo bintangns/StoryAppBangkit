@@ -15,3 +15,7 @@ t
 Dapp/src/main/java/com/example/storyappintermediate/DetailActivity.kt,e\e\ee47e5bc26b22391214b41c29757c8a63d09e603
 r
 Bapp/src/main/java/com/example/storyappintermediate/PostActivity.kt,1\4\14d7f5b959feb7fc734789f84930e04a21e0b4f9
+r
+Bapp/src/main/java/com/example/storyappintermediate/api/StoryApi.kt,0\8\089e558d08e999dd7585960804b67a4d4bf35d66
+r
+Bapp/src/main/java/com/example/storyappintermediate/MainActivity.kt,e\f\ef8fd5ef94a8d87cbfa018b35b0d4248c4665f6e

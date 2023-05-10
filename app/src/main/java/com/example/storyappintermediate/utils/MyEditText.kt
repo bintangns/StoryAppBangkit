@@ -27,6 +27,12 @@ class MyEditText : AppCompatEditText, View.OnTouchListener {
 
     }
 
+    interface OnPasswordLengthChanged {
+        fun onLengthChanged(length: Int)
+    }
+
+    var listener: OnPasswordLengthChanged? = null
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         hint = "Masukkan Password"
@@ -39,13 +45,19 @@ class MyEditText : AppCompatEditText, View.OnTouchListener {
 
         addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // Do nothing.
+                error= "Mohon isi Field"
             }
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if (s.toString().isNotEmpty()) showClearButton() else hideClearButton()
+                listener?.onLengthChanged(s.length)
             }
             override fun afterTextChanged(s: Editable) {
-                // Do nothing.
+                error = if((s.length)<8){
+                    "Password kurang dari 8 karakter"
+                }
+                else{
+                    null
+                }
             }
         })
     }
