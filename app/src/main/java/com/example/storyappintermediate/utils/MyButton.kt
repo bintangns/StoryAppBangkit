@@ -33,11 +33,20 @@ class MyButton : AppCompatButton {
         setTextColor(txtColor)
         textSize = 12f
         gravity = Gravity.CENTER
-        text = if(isEnabled) "Register" else "Password harus 8 Karakter atau lebih"
     }
+
     private fun init() {
         txtColor = ContextCompat.getColor(context, android.R.color.background_light)
         enabledBackground = ContextCompat.getDrawable(context, R.drawable.bg_button) as Drawable
         disabledBackground = ContextCompat.getDrawable(context, R.drawable.bg_button_disable) as Drawable
+    }
+
+    fun updateTextBasedOnPasswordLength(length: Int) {
+        isEnabled = length >= 8
+        text = when {
+            length == 0 -> "Mohon Isi Dulu"
+            length < 8 -> "Password masih kurang dari 8"
+            else -> "Register"
+        }
     }
 }

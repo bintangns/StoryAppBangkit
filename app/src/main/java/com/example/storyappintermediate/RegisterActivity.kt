@@ -47,17 +47,16 @@ class RegisterActivity : AppCompatActivity() {
 
         setMyButtonEnable()
 
-        myEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+        myEditText.listener = object: MyEditText.OnPasswordLengthChanged {
+            override fun onLengthChanged(length: Int) {
+                myButton.updateTextBasedOnPasswordLength(length)
             }
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                setMyButtonEnable()
-            }
-            override fun afterTextChanged(s: Editable) {
-            }
-        })
+        }
+        setMyButtonEnable()
 
-        myButton.setOnClickListener { Toast.makeText(this@RegisterActivity, myEditText.text, Toast.LENGTH_SHORT).show() }
+
+
+
 
 
 

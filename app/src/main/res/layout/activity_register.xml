@@ -50,7 +50,7 @@
             android:id="@+id/btn_register"
             android:layout_width="385dp"
             android:layout_height="53dp"
-            android:text="Mohon Isi Form"
+            android:text="Mohon Isi Dulu"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ed_register_password"
